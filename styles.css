@@ -1,0 +1,115 @@
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #1a2b50;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+}
+.sidebar .logo {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+.sidebar ul li {
+    margin: 15px 0;
+}
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.sidebar ul li a:hover {
+    background-color: #ff5733;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 270px;
+    padding: 20px;
+    width: 100%;
+}
+h1 {
+    font-size: 28px;
+    color: #1a2b50;
+}
+
+/* Admin Login */
+.login-container {
+    width: 300px;
+    margin: 100px auto;
+    text-align: center;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    display: block;
+}
+button {
+    background-color: #ff5733;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+.error-message {
+    color: red;
+   
+    font-size: 14px;
+}
+
+
+.chat-container {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+}
+.chat-box {
+    height: 200px;
+    overflow-y: scroll;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+.chat-box p {
+    background: #f1f1f1;
+    padding: 8px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+#chatInput {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+button {
+    padding: 10px;
+    background: #1a2b50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background: #ff5733;
+}
