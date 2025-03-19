@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SheShield Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f4ff; /* Lighter lavender background */
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #6a287e; /* Rich purple */
+            color: white;
+            padding: 20px;
+            height: 100%;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar .logo {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #e83e8c; /* Pink */
+        }
+
+        .admin-login {
+            background-color: #e83e8c; /* Pink */
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            display: none; /* Hide all sections by default */
+        }
+
+        #dashboard {
+            display: block; /* Show dashboard by default */
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1); /* Purple shadow */
+            border-radius: 10px;
+            text-align: center;
+            border-top: 4px solid #6a287e; /* Purple accent top border */
+        }
+
+        .quick-actions button {
+            background-color: #e83e8c; /* Pink */
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-actions button:hover {
+            background-color: #6a287e; /* Purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-activities {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e0d0ff; /* Light purple border */
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        /* Emergency Popup */
+        .emergency-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(232, 62, 140, 0.3); /* Pink shadow */
+            text-align: center;
+            width: 300px;
+            z-index: 1000;
+            border-left: 5px solid #e83e8c; /* Pink accent */
+        }
+
+        .close-btn {
+            float: right;
+            cursor: pointer;
+            color: #e83e8c; /* Pink */
+            font-size: 20px;
+        }
+
+        /* Community Chat Styles */
+        .chat-container {
+            border: 1px solid #e0d0ff; /* Light purple border */
+            border-radius: 10px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1); /* Purple shadow */
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #6a287e; /* Purple */
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .other-message {
+            background-color: #f3e5f5; /* Very light purple */
+            align-self: flex-start;
+        }
+
+        .message-info {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #e0d0ff; /* Light purple border */
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #e0d0ff; /* Light purple border */
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        .chat-input button {
+            background-color: #e83e8c; /* Pink */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: #6a287e; /* Purple */
+        }
+
+        /* ChatBot Styles */
+        .chatbot-message-container {
+            display: flex;               
+            padding: 4px 8px; 
+            border-radius: 10px;
+            color: white; 
+            max-width: 100%;             
+        }
+
+        .chatbot-message {
+            display: flex; 
+            align-items: center; 
+            background-color: #e83e8c; /* Pink */
+            margin-bottom: 10px;
+            border-radius: 5px; 
+            width: 40%;
+            color: whitesmoke; 
+            font-size: 1.1em;
+            text-align: left; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .chatbot-user-message {
+            display: flex; 
+            align-items: center; 
+            background-color: #6a287e; /* Purple */
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-left: auto;
+            width: 40%;    
+            color: whitesmoke; 
+            font-size: 1.1em; 
+            text-align: left; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+        }
+
+        .chatbot-loading-message {
+            display: flex; 
+            align-items: center; 
+            background-color: #e83e8c; /* Pink */
+            margin-bottom: 10px;
+            border-radius: 5px; 
+            width: 5%; 
+            color: whitesmoke; 
+            font-size: 1.1em; 
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+        }
+
+        .loading-dots {
+            font-weight: bold;
+        }
+
+        /* Story Form Styles */
+        .story-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1); /* Purple shadow */
+            border-top: 4px solid #6a287e; /* Purple accent */
+        }
+
+        .story-form textarea, .story-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e0d0ff; /* Light purple border */
+            border-radius: 5px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .story-form textarea:focus, .story-form input:focus {
+            border-color: #e83e8c; /* Pink border on focus */
+            outline: none;
+        }
+
+        .story-form button {
+            background-color: #e83e8c; /* Pink */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .story-form button:hover {
+            background-color: #6a287e; /* Purple */
+        }
+
+        /* Articles and Stories */
+        .article-preview, .story-preview {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1); /* Purple shadow */
+            border-left: 4px solid #e83e8c; /* Pink accent */
+        }
+
+        .article-preview h3, .story-preview h3 {
+            color: #6a287e; /* Purple */
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 10px;
+            color: #e83e8c; /* Pink */
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .read-more:hover {
+            color: #6a287e; /* Purple */
+            text-decoration: underline;
+        }
+
+        /* Iframe container */
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1); /* Purple shadow */
+        }
+
+        /* Dashboard Logo */
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-logo img {
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        /* Nearby travelers section */
+        #nearby-travelers .card {
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(106, 40, 126, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        #nearby-travelers .card:hover {
+            transform: translateY(-5px);
+        }
+
+        #nearby-travelers button {
+            background-color: #e83e8c; /* Pink */
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #nearby-travelers button:hover {
+            background-color: #6a287e; /* Purple */
+        }
+
+        .traveler-item:hover {
+            background-color: #f9f4ff !important; /* Light lavender on hover */
+        }
+
+        /* Additional common elements */
+        h1, h2, h3 {
+            color: #6a287e; /* Purple headers */
+        }
+
+        input[type="checkbox"] {
+            accent-color: #e83e8c; /* Pink checkbox */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2 class="logo">SheShield</h2>
+        <ul>
+            <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+            <li><a href="#" onclick="showSection('articles')">Awareness Articles</a></li>
+            <li><a href="#" onclick="showSection('stories')">Victim Stories</a></li>
+            <li><a href="#" onclick="showSection('chatbot')">Support Chatbot</a></li>
+            <li><a href="#" onclick="showSection('write-story')">Write Your Story</a></li>
+            <li><a href="#" onclick="showSection('communities')">Communities</a></li>
+            <li><div class="admin-login" onclick="showLogin()">Admin Login</div></li>
+            <li><a href="#" onclick="showSection('nearby-travelers')">Nearby Travelers</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div class="dashboard-logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgNjAiPgogIDxzdHlsZT4KICAgIC5sb2dvLXRleHQgewogICAgICBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7CiAgICAgIGZvbnQtd2VpZ2h0OiBib2xkOwogICAgICBmb250LXNpemU6IDQwcHg7CiAgICAgIGZpbGw6ICMwMDA7CiAgICB9CiAgICAuc3VidGl0bGUgewogICAgICBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7CiAgICAgIGZvbnQtc2l6ZTogMTJweDsKICAgICAgZmlsbDogIzY2NjsKICAgICAgbGV0dGVyLXNwYWNpbmc6IDRweDsKICAgIH0KICAgIC5zdWJ0aXRsZS1zcGFjZSB7CiAgICAgIGxldHRlci1zcGFjaW5nOiAxMHB4OwogICAgfQogIDwvc3R5bGU+CiAgPHRleHQgeD0iNSIgeT0iNDAiIGNsYXNzPSJsb2dvLXRleHQiPlNoZVNoaWVsZDwvdGV4dD4KICA8dGV4dCB4PSIxNSIgeT0iNTUiIGNsYXNzPSJzdWJ0aXRsZSI+QSA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gRiA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gTyA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gUiA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gVyA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gTyA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gTSA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gRSA8dHNwYW4gY2xhc3M9InN1YnRpdGxlLXNwYWNlIj4gPC90c3Bhbj4gTjwvdGV4dD4KPC9zdmc+Cg==" alt="SheShield Logo" />
+                <h1>Welcome to SheShield Dashboard</h1>
+            </div>
+        </header>
+
+        <section id="dashboard" class="section">
+            <h2>Dashboard Overview</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>User Analytics</h3>
+                    <p>Total Users: <span id="totalUsers">100</span></p>
+                    <p>Active Users: <span id="activeUsers">50</span></p>
+                    <p>Reports Received: <span id="reports">5</span></p>
+                </div>
+                <div class="card">
+                    <h3>Recent Activities</h3>
+                    <div class="recent-activities" id="recentActivities">
+                        <p>User A submitted a story</p>
+                        <p>User B joined a community</p>
+                    </div>
+                </div>
+                <div class="card quick-actions">
+                    <h3>Quick Actions</h3>
+                    <button onclick="showSection('write-story')">Write a Story</button>
+                    <button onclick="reportIncident()">Report an Incident</button>
+                    <button onclick="showEmergencyPopup()">Emergency Contacts</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="articles" class="section">
+            <h2>Awareness Articles</h2>
+            <p>Read important articles on women's safety and empowerment.</p>
+            
+            <div class="article-preview">
+                <h3>Educate, Equip, Empower: Building a Safer World for Women</h3>
+                <p>Discover how education and empowerment are creating positive change for women around the world...</p>
+                <a href="https://www.ourbetterworld.org/series/women-empowerment/blog/educate-equip-empower-building-a-safer-world-for-women?gad_source=1" target="_blank" class="read-more">Read Full Article</a>
+            </div>
+
+            <div class="article-preview">
+                <h3>Women's Safety Resources</h3>
+                <p>Access our curated collection of women's safety resources and articles:</p>
+                <iframe src="https://www.ourbetterworld.org/series/women-empowerment/blog/educate-equip-empower-building-a-safer-world-for-women?gad_source=1" class="iframe-container"></iframe>
+            </div>
+        </section>
+
+        <section id="stories" class="section">
+            <h2>Victim Stories</h2>
+            <p>Read stories shared by survivors. Your story matters.</p>
+            
+            <div class="story-preview">
+                <h3>Sara's Journey: Finding Strength After Trauma</h3>
+                <p>Sara shares her powerful story of resilience and recovery...</p>
+                <a href="https://www.unfpa.org/16-stories/sara-n" target="_blank" class="read-more">Read Full Story</a>
+            </div>
+
+            <div class="story-preview">
+                <h3>Stories of Empowerment</h3>
+                <p>Read more inspiring stories from women around the world:</p>
+                <iframe src="https://www.unfpa.org/16-stories/sara-n" class="iframe-container"></iframe>
+            </div>
+        </section>
+        <section id="nearby-travelers" class="section">
+            <h2>Nearby Travelers</h2>
+            <p>Connect with other women traveling nearby and send emergency support when needed.</p>
+            
+            <div class="card">
+                <h3>Your Location</h3>
+                <p id="current-location">Fetching your location...</p>
+                <button id="refresh-location" onclick="getLocation()" style="background-color: #6a287e; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 15px;">
+                    Refresh Location
+                </button>
+                
+                <div id="location-map" style="width: 100%; height: 300px; background-color: #f9f4ff; border-radius: 10px; margin-bottom: 15px; position: relative;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        Map will display here once location is shared
+                    </div>
+                </div>
+                
+                <div id="travel-status">
+                    <h3>Travel Status</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <select id="status-dropdown" style="flex-grow: 1; padding: 10px; border: 1px solid #e0d0ff; border-radius: 5px; margin-right: 10px;">
+                            <option value="safe">I'm Safe</option>
+                            <option value="cautious">Feeling Cautious</option>
+                            <option value="unsafe">Feeling Unsafe</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                        <button onclick="updateStatus()" style="background-color: #e83e8c; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h3>Nearby Travelers</h3>
+                <p id="nearby-count">Scanning for nearby women travelers...</p>
+                
+                <div id="nearby-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #e0d0ff; border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                    <!-- Nearby travelers will be listed here -->
+                </div>
+                
+                <button id="send-support-btn" onclick="sendEmergencySupport()" style="background-color: #e83e8c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%;" disabled>
+                    Send Emergency Support
+                </button>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h3>Emergency Support Settings</h3>
+                <div style="margin-bottom: 15px;">
+                    <label for="support-message" style="display: block; margin-bottom: 5px;">Custom Emergency Message:</label>
+                    <textarea id="support-message" rows="3" style="width: 100%; padding: 10px; border: 1px solid #e0d0ff; border-radius: 5px;" placeholder="I need help at my location. Please assist or send help."></textarea>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="emergency-contacts" style="display: block; margin-bottom: 5px;">Emergency Contacts (separated by commas):</label>
+                    <input type="text" id="emergency-contacts" style="width: 100%; padding: 10px; border: 1px solid #e0d0ff; border-radius: 5px;" placeholder="Contact names">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <input type="checkbox" id="share-with-authorities" checked>
+                    <label for="share-with-authorities">Share with local authorities</label>
+                </div>
+                
+                <button onclick="saveSettings()" style="background-color: #6a287e; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+                    Save Settings
+                </button>
+            </div>
+        </section>
+        
+        <!-- Add this JavaScript code to the end of the existing script tag -->
+        <script>
+            // Variables to store nearby travelers data
+            let nearbyTravelers = [];
+            let userCoords = null;
+            let userMarker = null;
+            let travelersMap = null;
+            let selectedTraveler = null;
+        
+            // Initialize the feature when the page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                // Check if geolocation is supported
+                if (navigator.geolocation) {
+                    getLocation();
+                } else {
+                    document.getElementById('current-location').textContent = 'Geolocation is not supported by your browser';
+                }
+                
+                // Load emergency settings from localStorage if available
+                loadSettings();
+                
+                // Simulate nearby travelers (in a real app, this would be from a server)
+                simulateNearbyTravelers();
+            });
+        
+            // Get the user's current location
+            function getLocation() {
+                document.getElementById('current-location').textContent = 'Getting location...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userCoords = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Display location info
+                        document.getElementById('current-location').innerHTML = 
+                            `Location shared: <strong>Lat: ${userCoords.lat.toFixed(6)}, Lng: ${userCoords.lng.toFixed(6)}</strong>`;
+                        
+                        // In a real app, this would be sent to the server
+                        console.log('User location:', userCoords);
+                        
+                        // Initialize or update the map (in a real app, you would use Google Maps, Mapbox, etc.)
+                        initializeMap();
+                        
+                        // Refresh nearby travelers based on new location
+                        simulateNearbyTravelers();
+                    },
+                    function(error) {
+                        let errorMessage = 'Unable to retrieve your location';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Location access denied. Please enable location sharing.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Location information is unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Location request timed out.';
+                                break;
+                        }
+                        document.getElementById('current-location').textContent = errorMessage;
+                    }
+                );
+            }
+        
+            // Initialize a simple map (placeholder for a real map implementation)
+            function initializeMap() {
+                const mapContainer = document.getElementById('location-map');
+                
+                // In a real application, you would initialize a map library here
+                // For now, just display a placeholder
+                mapContainer.innerHTML = `
+                    <div style="position: relative; width: 100%; height: 100%; background-color: #f9f4ff; border-radius: 10px; overflow: hidden;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #e83e8c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white;"></div>
+                        <div style="position: absolute; bottom: 10px; left: 10px; background-color: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 5px; font-size: 12px;">
+                            Your location: Lat: ${userCoords.lat.toFixed(6)}, Lng: ${userCoords.lng.toFixed(6)}
+                        </div>
+                        <div style="position: absolute; top: 10px; right: 10px; background-color: #6a287e; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
+                            SheShield Map View
+                        </div>
+                    </div>
+                `;
+            }
+        
+            // Update user's travel status
+            function updateStatus() {
+                const statusDropdown = document.getElementById('status-dropdown');
+                const selectedStatus = statusDropdown.value;
+                const statusText = statusDropdown.options[statusDropdown.selectedIndex].text;
+                
+                // Show feedback
+                alert(`Status updated to: ${statusText}`);
+                
+                // In a real app, this would be sent to the server
+                console.log('Status updated:', selectedStatus);
+                
+                // If emergency, automatically trigger support
+                if (selectedStatus === 'emergency') {
+                    sendEmergencySupport();
+                }
+                
+                // Add to recent activities
+                const recentActivities = document.getElementById('recentActivities');
+                const activityItem = document.createElement('p');
+                activityItem.textContent = `You updated your travel status to: ${statusText}`;
+                recentActivities.insertBefore(activityItem, recentActivities.firstChild);
+            }
+        
+            function simulateNearbyTravelers() {
+                // Clear previous data
+                nearbyTravelers = [];
+                
+                // Generate random number of travelers (0-5)
+                const numTravelers = Math.floor(Math.random() * 6);
+                
+                // Update the counter
+                document.getElementById('nearby-count').textContent = 
+                    numTravelers > 0 ? `${numTravelers} travelers found nearby` : 'No travelers found nearby';
+                
+                // Enable/disable the support button
+                document.getElementById('send-support-btn').disabled = numTravelers === 0;
+                
+                // Clear the list
+                const nearbyList = document.getElementById('nearby-list');
+                nearbyList.innerHTML = '';
+                
+                // Generate random travelers
+                if (numTravelers > 0 && userCoords) {
+                    const names = ['Emily', 'Sarah', 'Jessica', 'Aisha', 'Maria', 'Priya', 'Olivia', 'Emma'];
+                    const statuses = ['Safe', 'Cautious', 'Safe', 'Cautious', 'Safe'];
+                    
+                    for (let i = 0; i < numTravelers; i++) {
+                        // Generate a random position near the user
+                        const latOffset = (Math.random() - 0.5) * 0.01;
+                        const lngOffset = (Math.random() - 0.5) * 0.01;
+                        
+                        const traveler = {
+                            id: `traveler-${i}`,
+                            name: names[Math.floor(Math.random() * names.length)],
+                            status: statuses[Math.floor(Math.random() * statuses.length)],
+                            distance: Math.floor(Math.random() * 500) + 100, // Random distance in meters
+                            coords: {
+                                lat: userCoords.lat + latOffset,
+                                lng: userCoords.lng + lngOffset
+                            }
+                        };
+                        
+                        nearbyTravelers.push(traveler);
+                        
+                        // Create a list item
+                        const listItem = document.createElement('div');
+                        listItem.className = 'traveler-item';
+                        listItem.style.padding = '10px';
+                        listItem.style.borderBottom = '1px solid #eee';
+                        listItem.style.cursor = 'pointer';
+                        listItem.setAttribute('data-traveler-id', traveler.id);
+                        
+                        // Status color
+                        const statusColor = traveler.status === 'Safe' ? '#4CAF50' : '#FFC107';
+                        
+                        listItem.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: bold;">${traveler.name}</div>
+                                    <div style="font-size: 0.9em; color: #666;">${traveler.distance}m away</div>
+                                </div>
+                                <div style="background-color: ${statusColor}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;">
+                                    ${traveler.status}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add click event
+                        listItem.addEventListener('click', function() {
+                            selectTraveler(traveler.id);
+                        });
+                        
+                        nearbyList.appendChild(listItem);
+                    }
+                } else if (numTravelers === 0) {
+                    nearbyList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">No travelers found nearby.</div>';
+                }
+            }
+        
+            function selectTraveler(travelerId) {
+                // Find the traveler
+                selectedTraveler = nearbyTravelers.find(t => t.id === travelerId);
+                
+                // Update the UI
+                document.querySelectorAll('.traveler-item').forEach(item => {
+                    if (item.getAttribute('data-traveler-id') === travelerId) {
+                        item.style.backgroundColor = '#f0f0f0';
+                    } else {
+                        item.style.backgroundColor = 'transparent';
+                    }
+                });
+                
+                // Update the button text
+                const supportBtn = document.getElementById('send-support-btn');
+                supportBtn.textContent = `Send Support to ${selectedTraveler.name}`;
+                supportBtn.disabled = false;
+            }
+        
+            // Send emergency support
+            function sendEmergencySupport() {
+                // Get the custom message
+                const message = document.getElementById('support-message').value.trim() || 
+                    "I need help at my location. Please assist or send help.";
+                
+                let targetName = "nearby travelers";
+                if (selectedTraveler) {
+                    targetName = selectedTraveler.name;
+                }
+                
+                // Show confirmation
+                if (confirm(`Send emergency support to ${targetName}?`)) {
+                    // In a real app, this would trigger an API call
+                    
+                    // Show feedback
+                    alert(`Emergency support request sent to ${targetName}!`);
+                    
+                    // Add to recent activities
+                    const recentActivities = document.getElementById('recentActivities');
+                    const activityItem = document.createElement('p');
+                    activityItem.textContent = `You sent emergency support to ${targetName}`;
+                    recentActivities.insertBefore(activityItem, recentActivities.firstChild);
+                    
+                    // Increment the reports counter
+                    const reportsElement = document.getElementById('reports');
+                    const currentReports = parseInt(reportsElement.textContent);
+                    reportsElement.textContent = currentReports + 1;
+                }
+            }
+        
+            // Save emergency settings
+            function saveSettings() {
+                const message = document.getElementById('support-message').value;
+                const contacts = document.getElementById('emergency-contacts').value;
+                const shareWithAuthorities = document.getElementById('share-with-authorities').checked;
+                
+                // In a real app, save to database/server
+                // For now, just use localStorage
+                const settings = {
+                    message,
+                    contacts,
+                    shareWithAuthorities
+                };
+                
+                localStorage.setItem('emergencySettings', JSON.stringify(settings));
+                
+                // Show feedback
+                alert('Emergency support settings saved successfully!');
+            }
+        
+            // Load emergency settings
+            function loadSettings() {
+                const savedSettings = localStorage.getItem('emergencySettings');
+                
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    document.getElementById('support-message').value = settings.message || '';
+                    document.getElementById('emergency-contacts').value = settings.contacts || '';
+                    document.getElementById('share-with-authorities').checked = 
+                        settings.shareWithAuthorities !== undefined ? settings.shareWithAuthorities : true;
+                }
+            }
+        
+            setInterval(simulateNearbyTravelers, 30000); // Every 30 seconds
+        </script>
+
+        <section id="chatbot" class="section">
+            <h2>Support Chatbot</h2>
+            <p>Get instant support from our AI chatbot.</p>
+            <div class="card">
+                <h3>Chatbot Assistant</h3>
+                <p>Our AI chatbot is here to provide information, resources, and support.</p>
+                <button id="start-chat-button" onclick="startChat()" style="background-color: #ff5733; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Start Chat</button>
+                
+                <div class="chat-ui" id="chatUI" style="display: none; height: 400px; width: 100%; flex-direction: column;">
+                    <div class="chat-messages" id="chatMessages" style="flex-grow: 1; overflow-y: auto;"></div>
+                    <div class="chat-input">
+                        <input type="text" id="chatbotMessageInput" placeholder="Type your message..."
+                            style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;">
+                        <button id="send-button" title="Send Message">Send</button>
+                    </div>
+                </div>
+            
+            </div>
+        </section>
+
+        <section id="write-story" class="section">
+            <h2>Write Your Story</h2>
+            <p>Share your experiences and help others. Your story can inspire many.</p>
+            
+            <div class="story-form">
+                <h3>Share Your Experience</h3>
+                <input type="text" id="storyTitle" placeholder="Title of your story">
+                <textarea id="storyContent" rows="10" placeholder="Share your story here..."></textarea>
+                <div>
+                    <input type="checkbox" id="anonymous"> 
+                    <label for="anonymous">Submit anonymously</label>
+                </div>
+                <button onclick="submitStory()">Submit Story</button>
+            </div>
+        </section>
+
+        <section id="communities" class="section">
+            <h2>Communities</h2>
+            <p>Join safe communities and connect with others who understand.</p>
+            
+            <div class="card">
+                <h3>SheShield Community Chat</h3>
+                <p>Connect with others in a safe, moderated environment.</p>
+                
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message other-message">
+                            <div class="message-info">Moderator • 10:30 AM</div>
+                            Welcome to the SheShield community chat! This is a safe space for sharing experiences and supporting each other.
+                        </div>
+                        <div class="message other-message">
+                            <div class="message-info">Sarah • 10:35 AM</div>
+                            Hello everyone! I'm new here. I'm looking for resources about workplace safety.
+                        </div>
+                        <div class="message other-message">
+                            <div class="message-info">Emily • 10:37 AM</div>
+                            Hi Sarah! Welcome to the group. I can recommend some great resources on workplace safety that helped me.
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Type your message...">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Emergency Popup -->
+    <div class="emergency-popup" id="emergencyPopup">
+        <span class="close-btn" onclick="closeEmergencyPopup()">&times;</span>
+        <h2>Emergency Contacts</h2>
+        <p>📞 Helpline: 123-456-789</p>
+        <p>📞 Women's Helpline: 1800-123-456</p>
+        <p>📞 Police Emergency: 100</p>
+        <p>📍 Nearest Safe House: XYZ Location</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function writeStory() {
+            showSection('write-story');
+        }
+
+        function reportIncident() {
+            alert("Incident reported! Admin will review.");
+        }
+
+        function showEmergencyPopup() {
+            document.getElementById("emergencyPopup").style.display = "block";
+        }
+
+        function closeEmergencyPopup() {
+            document.getElementById("emergencyPopup").style.display = "none";
+        }
+
+        function showLogin() {
+            const password = prompt("Enter admin password:");
+            if (password === "admin123") { // Simple example - in real app use secure authentication
+                alert("Admin login successful!");
+            } else {
+                alert("Incorrect password!");
+            }
+        }
+
+        function submitStory() {
+            const title = document.getElementById("storyTitle").value;
+            const content = document.getElementById("storyContent").value;
+            const anonymous = document.getElementById("anonymous").checked;
+            
+            if (!title || !content) {
+                alert("Please fill in both title and content fields.");
+                return;
+            }
+            
+            alert("Thank you for sharing your story. It will be reviewed and published soon.");
+            document.getElementById("storyTitle").value = "";
+            document.getElementById("storyContent").value = "";
+            document.getElementById("anonymous").checked = false;
+            
+            // Add to recent activities
+            const recentActivities = document.getElementById("recentActivities");
+            const activityItem = document.createElement("p");
+            activityItem.textContent = anonymous ? "Anonymous user submitted a story" : "You submitted a story";
+            recentActivities.insertBefore(activityItem, recentActivities.firstChild);
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            const chatMessages = document.getElementById("chatMessages");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "message user-message";
+            
+            const messageInfo = document.createElement("div");
+            messageInfo.className = "message-info";
+            messageInfo.textContent = "You • " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.appendChild(messageInfo);
+            messageDiv.appendChild(document.createTextNode(message));
+            
+            chatMessages.appendChild(messageDiv);
+            messageInput.value = "";
+            
+        
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            setTimeout(() => {
+                const responseDiv = document.createElement("div");
+                responseDiv.className = "message other-message";
+                
+                const responseInfo = document.createElement("div");
+                responseInfo.className = "message-info";
+                responseInfo.textContent = "Moderator • " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                responseDiv.appendChild(responseInfo);
+                responseDiv.appendChild(document.createTextNode("Thank you for sharing. Is there anything specific you'd like to discuss with the community?"));
+                
+                chatMessages.appendChild(responseDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
+        // Chatbot Functions
+
+        function startChat() {
+      
+            const startChatButton = document.getElementById('start-chat-button');
+            startChatButton.style.display = 'none';
+
+   
+            const chatUI = document.getElementById('chatUI');
+            chatUI.style.display = 'flex';
+
+            displayChatbotChat("Hello! How can I assist you?", 'chatbot');
+            document.getElementById('send-button').addEventListener('click', sendChatbotChat);
+        }
+        
+        function sendChatbotChat() {
+            const messageInput = document.getElementById("chatbotMessageInput");
+            const message = messageInput.value.trim();
+
+            if (!message) return;
+
+            const chatMessages = document.getElementById("chatMessages");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "chatbot-user-message";
+
+            // Create a container for the message
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "chatbot-message-container";
+
+            const messageInfo = document.createElement("div");
+            messageInfo.className = "message-info";
+
+            messageContainer.appendChild(messageInfo);
+            messageContainer.appendChild(document.createTextNode(message));
+
+            messageDiv.appendChild(messageContainer);
+            chatMessages.appendChild(messageDiv);
+            messageInput.value = "";
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            fetchChatbotResponse(message);
+        }
+
+        async function fetchChatbotResponse(userInput) {
+            const apiKey = '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'; // Replace with your OpenRouter API key
+
+            // Show loading indicator and start dot animation
+            const { loadingMessageDiv, loadingDots } = showBotLoading();
+            const loadingInterval = animateLoadingDots(loadingDots);
+
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'openai/gpt-4o',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Please return all responses in Markdown format.'
+                            },
+                            {
+                                role: 'user',
+                                content: userInput,
+                            },
+                        ],
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                clearInterval(loadingInterval);
+                loadingMessageDiv.remove();
+
+                if (data.choices && data.choices.length > 0) {
+                    displayChatbotChat(data.choices[0].message.content, 'bot');
+                } else {
+                    displayChatbotChat("Sorry, I couldn't get a response from the chatbot.", 'bot');
+                }
+            } catch (error) {
+                clearInterval(loadingInterval);
+                loadingMessageDiv.remove();
+                console.error('Error:', error);
+                displayChatbotChat("An error occurred while communicating with the chatbot.", 'bot');
+            }
+        }
+
+        function displayChatbotChat(message, sender) {
+            const chatMessages = document.getElementById("chatMessages");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `chatbot-message ${sender}-message`;
+
+      
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "chatbot-message-container";
+
+
+            const messageText = document.createElement("div");
+            messageText.textContent = message;
+            messageText.innerHTML = marked.parse(message);
+
+
+            const messageInfo = document.createElement("div");
+            messageInfo.className = "message-info";
+
+            messageContainer.appendChild(messageText);
+            messageContainer.appendChild(messageInfo);
+
+            messageDiv.appendChild(messageContainer);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showBotLoading() {
+            const chatMessages = document.getElementById("chatMessages");
+            const loadingMessageDiv = document.createElement("div");
+            loadingMessageDiv.className = "chatbot-loading-message";
+
+         
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "chatbot-message-container";
+
+            const messageText = document.createElement("div");
+            messageText.textContent = "";
+
+            const loadingDots = document.createElement("span");
+            loadingDots.className = "loading-dots";
+            messageText.appendChild(loadingDots);
+
+            messageContainer.appendChild(messageText);
+            loadingMessageDiv.appendChild(messageContainer);
+
+            chatMessages.appendChild(loadingMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            return { loadingMessageDiv, loadingDots };
+        }
+
+        function animateLoadingDots(loadingDotsElement) {
+            let dots = 0;
+            return setInterval(() => {
+                dots = (dots % 3) + 1;
+                loadingDotsElement.textContent = ".".repeat(dots);
+            }, 300);
+        }
+
+        document.getElementById("chatbotMessageInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                sendChatbotChat();
+            }
+        });
+
+        setInterval(() => {
+            const activities = [
+                "User joined the community chat",
+                "New safety article published",
+                "Support group session scheduled for tomorrow",
+                "New resource added to safety toolkit",
+                "Community workshop announced"
+            ];
+         
+            if (Math.random() < 0.2) {
+                const recentActivities = document.getElementById("recentActivities");
+                const activityItem = document.createElement("p");
+                activityItem.textContent = activities[Math.floor(Math.random() * activities.length)];
+                recentActivities.insertBefore(activityItem, recentActivities.firstChild);
+               
+                if (recentActivities.children.length > 8) {
+                    recentActivities.removeChild(recentActivities.lastChild);
+                }
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
